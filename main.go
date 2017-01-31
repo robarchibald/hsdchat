@@ -8,11 +8,10 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"text/template"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
-var homeTemplate = template.Must(template.ParseFiles("home.html"))
+//var homeTemplate = template.Must(template.ParseFiles("home.html"))
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
@@ -25,14 +24,14 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	homeTemplate.Execute(w, r.Host)
+	//homeTemplate.Execute(w, r.Host)
 }
 
 func main() {
 	flag.Parse()
 	hub := newHub()
 	go hub.run()
-	http.HandleFunc("/", serveHome)
+	http.Handle("/", http.FileServer(http.Dir(".")))
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})
